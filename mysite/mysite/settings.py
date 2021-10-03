@@ -40,7 +40,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'employee.apps.EmployeeConfig',
-    'django_seed'
+    'django_seed',
+    'mptt'
 
 ]
 
@@ -73,6 +74,8 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'mysite.wsgi.application'
+
+MPTT_ADMIN_LEVEL_INDENT = 20
 
 
 # Database

@@ -1,3 +1,10 @@
 from django.contrib import admin
+from mptt.admin import MPTTModelAdmin
+from employee.models import EmployeeTree
 
-# Register your models here.
+
+class EmployeeTreeAdmin(admin.ModelAdmin):
+    fields = ['full_name', 'parent', 'level', 'hired_at', 'salary']
+
+
+admin.site.register(EmployeeTree, EmployeeTreeAdmin)
