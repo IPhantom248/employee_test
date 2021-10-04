@@ -12,13 +12,12 @@
 </head>
 <body>
 {% load mptt_tags %}
-
 <div class="dd" id="nestable">
     <ol class="dd-list">
         {% recursetree object_list %}
         <li class="dd-item">
             <div class="dd-handle">{{ node.full_name }} | level: {{node.level}}</div>
-            {% if not node.is_leaf_node %}
+            {% if not node.is_leaf_node and node.get_children%}
             <ol class="dd-list">
                 {{children}}
             </ol>
@@ -29,30 +28,14 @@
 </div>
 
 <script>
-
 $(document).ready(function()
 {
-
-
-
     // activate Nestable for list 1
     $('#nestable').nestable({
         group: 1
     })
     .on('change', updateOutput);
-
-
-
-
-
-
 });
-
-
-
-
-
-
 </script>
 </body>
 </html>
