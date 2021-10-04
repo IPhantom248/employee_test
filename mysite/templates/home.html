@@ -1,23 +1,41 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    {% load static %}
+    <link rel="stylesheet" type="text/css" href="{% static 'employee/style.css' %}">
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+
+    <script src="{% static 'employee/jquery.nestable.js' %}"></script>
     <meta charset="UTF-8">
     <title>Title</title>
 </head>
 <body>
 {% load mptt_tags %}
-<ul class="root">
-    {% recursetree object_list %}
-        <li>
-            {{ node.full_name }}
-            {% if not node.is_leaf_node %}
-                <ul class="children">
-                    {{ children }}
-                </ul>
+<div class="dd" id="nestable">
+    <ol class="dd-list">
+        {% recursetree object_list %}
+        <li class="dd-item">
+            <div class="dd-handle">{{ node.full_name }} | level: {{node.level}}</div>
+            {% if not node.is_leaf_node and node.get_children%}
+            <ol class="dd-list">
+                {{children}}
+            </ol>
             {% endif %}
         </li>
-    {% endrecursetree %}
-</ul>
+        {% endrecursetree %}
+    </ol>
+</div>
 
+<script>
+$(document).ready(function()
+{
+    // activate Nestable for list 1
+    $('#nestable').nestable({
+        group: 1
+    })
+    .on('change', updateOutput);
+});
+</script>
 </body>
 </html>
