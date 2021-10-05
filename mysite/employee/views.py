@@ -16,7 +16,7 @@ class EmployeesListView(ListView):
     model = EmployeeTree
     template_name = "employee/employees.html"  # <app>/<model>_<viewtype>.html
     context_object_name = "employees"
-    # ordering = ["f"]
+    ordering = ["full_name"]
     # paginate_by = 6
 
     # def get_context_data(self, **kwargs):
