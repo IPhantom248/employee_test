@@ -16,18 +16,10 @@ class EmployeesListView(ListView):
     model = EmployeeTree
     template_name = "employee/employees.html"  # <app>/<model>_<viewtype>.html
     context_object_name = "employees"
-    ordering = ["full_name"]
-    # paginate_by = 6
-
-    # def get_context_data(self, **kwargs):
-    #     context = super().get_context_data(**kwargs)
-    #     context["title"] = "Sharu X2"
-    #     return context
-
-
-
-# full_name = models.CharField(max_length=150)
-# level = models.IntegerField()
-# hired_at = models.DateField()
-# salary = models.IntegerField()
-# parent = TreeForeignKey('self', null=True, blank=True, related_name='children', on_delet
+    # ordering = context['request']
+    # paginate_by = 10
+    
+   
+    def get_ordering(self):
+        self.ordering = self.request.GET.get('order_by')
+        return self.ordering
