@@ -1,9 +1,14 @@
-import parser
-
 import dateutil.parser
-from django.shortcuts import render
+from django.contrib.auth import login, logout
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.http import HttpResponseRedirect
+from django.shortcuts import render, redirect
+from django.urls import reverse
+
+from employee.forms import SignUpForm, LoginForm
 from employee.models import EmployeeTree
-from django.views.generic import ListView
+from django.views.generic import ListView, DetailView, CreateView, FormView, RedirectView
+from django.contrib.auth.models import User
 from django.db.models import Q
 
 from dateutil.parser import parse
@@ -18,10 +23,12 @@ def get_all_employees_test(request):
     return render(request, 'employee/test_nest.html', {'object_list': object_list})
 
 
-class EmployeesListView(ListView):
+class EmployeesListView(LoginRequiredMixin, ListView):
     model = EmployeeTree
     template_name = "employee/employees.html"  # <app>/<model>_<viewtype>.html
     context_object_name = "employees"
+
+
 
     def get_ordering(self):
         self.ordering = self.request.GET.get('order_by')
@@ -43,4 +50,40 @@ class EmployeesListView(ListView):
                     return None
         else:
             return super().get_queryset()
+
+# class LoginForm(form)
+
+
+class SignUpView(CreateView):
+    model = User
+    template_name = 'employee/signup.html'
+    form_class = SignUpForm
+
+    def get_success_url(self):
+        return reverse('employees-home')
+
+
+class LoginView(FormView):
+    form_class = LoginForm
+    template_name = 'employee/login.html'
+
+
+    def get_success_url(self):
+        return reverse('employees-home')
+
+    def form_valid(self, form):
+        login(self.request, form.get_user())
+        return redirect(self.get_success_url())
+
+
+
+
+def user_logout(request):
+    logout(request)
+    return redirect('employees-home')
+
+
+
+
+
 
