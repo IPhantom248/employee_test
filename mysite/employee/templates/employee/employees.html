@@ -14,6 +14,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
 </head>
+
+<body>
 <header class="site-header">
     <nav class="navbar navbar-expand-md navbar-dark bg-steel fixed-top">
         <div class="container">
@@ -28,35 +30,34 @@
         </div>
     </nav>
 </header>
-<body>
-    <table class="table table-striped">
-        <thead class="thead-dark">
-            <tr>
-                <th scope="col">#</th>
-                <th scope="col"><a href="?order_by=full_name">Full Name</a></th>
-                <th scope="col"><a href="?order_by=parent">Boss Name</a></th>
-                <th scope="col"><a href="?order_by=-salary">Salary</a></th>
-                <th scope="col"><a href="?order_by=hired_at">Hired</a></th>
-                <th scope="col"><a href="?order_by=level">Level</a></th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for employee in employees %}
-                <tr>
-                    <th scope="row">{{employee.id}}</th>
-                    <td>{{ employee.full_name }}</td>
-                    {% if employee.parent %}
-                        <td>{{ employee.parent.full_name }}</td>
-                    {% else %}
-                        <td>Boss</td>
-                    {% endif %}
-                    <td>{{ employee.salary }}</td>
-                    <td>{{ employee.hired_at|date:"F d, Y" }}</td>
-                    <td>{{ employee.level }}</td>
-                </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+<table class="table table-striped mt-4">
+    <thead class="thead-dark">
+    <tr>
+        <th scope="col">#</th>
+        <th scope="col"><a href="?order_by=full_name">Full Name</a></th>
+        <th scope="col"><a href="?order_by=parent">Boss Name</a></th>
+        <th scope="col"><a href="?order_by=-salary">Salary</a></th>
+        <th scope="col"><a href="?order_by=hired_at">Hired</a></th>
+        <th scope="col"><a href="?order_by=level">Level</a></th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for employee in employees %}
+    <tr>
+        <th scope="row">{{employee.id}}</th>
+        <td>{{ employee.full_name }}</td>
+        {% if employee.parent %}
+        <td>{{ employee.parent.full_name }}</td>
+        {% else %}
+        <td>Boss</td>
+        {% endif %}
+        <td>{{ employee.salary }}</td>
+        <td>{{ employee.hired_at|date:"F d, Y" }}</td>
+        <td>{{ employee.level }}</td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
 </body>
 </html>
 

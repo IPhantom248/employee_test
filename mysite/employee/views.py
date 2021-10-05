@@ -1,5 +1,6 @@
 import parser
 
+import dateutil.parser
 from django.shortcuts import render
 from employee.models import EmployeeTree
 from django.views.generic import ListView
@@ -38,8 +39,8 @@ class EmployeesListView(ListView):
                 try:
                     date = parse(search).date()
                     return super().get_queryset().filter(hired_at=date)
-                except parser.ParserError:
-                    pass
+                except dateutil.parser.ParserError:
+                    return None
         else:
             return super().get_queryset()
 
