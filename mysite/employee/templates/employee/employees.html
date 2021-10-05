@@ -3,12 +3,31 @@
 <head>
     {% load static %}
     <link rel="stylesheet" type="text/css" href="{% static 'employee/style.css' %}">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="{% static 'employee/main.css' %}">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+          integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
 </head>
+<header class="site-header">
+    <nav class="navbar navbar-expand-md navbar-dark bg-steel fixed-top">
+        <div class="container">
+            <a class="navbar-brand mr-4" href="/">home</a>
+            <form class="form-inline" action="{% url 'employees-detail' %}" method="get">
+                <input class="form-control mr-sm-2" type="search" name="s" placeholder="Search..." aria-label="Search">
+                <button class="btn btn-outline-success my-2 my-sm-0" type="submit">
+                    <i class="fas fa-search" aria-hidden="true"></i>
+                </button>
+            </form>
+            <a class="navbar-brand mr-4" href="{% url 'employees-detail' %}">Employees Info</a>
+        </div>
+    </nav>
+</header>
 <body>
     <table class="table table-striped">
         <thead class="thead-dark">
@@ -16,16 +35,16 @@
                 <th scope="col">#</th>
                 <th scope="col"><a href="?order_by=full_name">Full Name</a></th>
                 <th scope="col"><a href="?order_by=parent">Boss Name</a></th>
-                <th scope="col"><a href="?order_by=-salary">Salary</a></th> 
-                <th scope="col"><a href="?order_by=hired_at">Hired</a></th> 
-                <th scope="col"><a href="?order_by=level">Level</a></th> 
+                <th scope="col"><a href="?order_by=-salary">Salary</a></th>
+                <th scope="col"><a href="?order_by=hired_at">Hired</a></th>
+                <th scope="col"><a href="?order_by=level">Level</a></th>
             </tr>
         </thead>
         <tbody>
             {% for employee in employees %}
                 <tr>
                     <th scope="row">{{employee.id}}</th>
-                      <td>{{ employee.full_name }}</td>
+                    <td>{{ employee.full_name }}</td>
                     {% if employee.parent %}
                         <td>{{ employee.parent.full_name }}</td>
                     {% else %}
