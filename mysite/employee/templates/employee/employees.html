@@ -14,18 +14,18 @@
         <thead class="thead-dark">
             <tr>
                 <th scope="col">#</th>
-                <th scope="col">Full Name</th>
-                <th scope="col">Boss Name</th>
-                <th scope="col">Salary</th> 
-                <th scope="col">Hired</th> 
-                <th scope="col">Level</th> 
+                <th scope="col"><a href="?order_by=full_name">Full Name</a></th>
+                <th scope="col"><a href="?order_by=parent">Boss Name</a></th>
+                <th scope="col"><a href="?order_by=-salary">Salary</a></th> 
+                <th scope="col"><a href="?order_by=hired_at">Hired</a></th> 
+                <th scope="col"><a href="?order_by=level">Level</a></th> 
             </tr>
         </thead>
         <tbody>
             {% for employee in employees %}
                 <tr>
                     <th scope="row">{{employee.id}}</th>
-                    <td>{{ employee.full_name }}</td>
+                      <td>{{ employee.full_name }}</td>
                     {% if employee.parent %}
                         <td>{{ employee.parent.full_name }}</td>
                     {% else %}
