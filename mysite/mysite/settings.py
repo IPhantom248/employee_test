@@ -39,7 +39,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'employee.apps.EmployeeConfig',
-    'mptt'
+    'mptt',
+    'rest_framework'
 
 ]
 

@@ -1,20 +1,20 @@
-import json
-
 import dateutil.parser
 from django.contrib.auth import login, logout
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.http import HttpResponseRedirect, JsonResponse, HttpResponse
 from django.shortcuts import render, redirect
 from django.urls import reverse
-from django.core import serializers
+from rest_framework.generics import ListAPIView
 
 from employee.forms import SignUpForm, LoginForm
 from employee.models import EmployeeTree
-from django.views.generic import ListView, DetailView, CreateView, FormView, RedirectView
+from django.views.generic import ListView, CreateView, FormView
 from django.contrib.auth.models import User
 from django.db.models import Q
+from rest_framework.response import Response
 
 from dateutil.parser import parse
+
+from employee.serializers import EmployeeTreeSerializer
 
 
 def get_all_employees(request):
@@ -27,23 +27,15 @@ def get_all_employees_test(request):
     return render(request, 'employee/test_nest.html', {'object_list': object_list})
 
 
-class EmployeesListView(LoginRequiredMixin, ListView):
-    model = EmployeeTree
-    template_name = "employee/employees.html"  # <app>/<model>_<viewtype>.html
-    context_object_name = "employees"
+class EmployeeListApiView(LoginRequiredMixin, ListAPIView):
+    queryset = EmployeeTree.objects.all()
 
     def get(self, request, *args, **kwargs):
         if request.is_ajax():
-            data = serializers.serialize('json', self.get_queryset(),
-                                         fields=['full_name', 'parent', 'salary', 'hired_at', 'level'])
-            print(data)
-            return HttpResponse(data, content_type='application/json')
+            serializer = EmployeeTreeSerializer(self.get_queryset(), many=True)
+            return Response(serializer.data, content_type='application/json')
         else:
             return super().get(self, request, *args, **kwargs)
-
-    def get_ordering(self):
-        self.ordering = self.request.GET.get('order_by')
-        return self.ordering
 
     def get_queryset(self):
         if self.request.GET.get('s'):
@@ -63,7 +55,14 @@ class EmployeesListView(LoginRequiredMixin, ListView):
             return super().get_queryset()
 
 
-# class LoginForm(form)
+class EmployeesListView(LoginRequiredMixin, ListView):
+    model = EmployeeTree
+    template_name = "employee/employees.html"  # <app>/<model>_<viewtype>.html
+    context_object_name = "employees"
+
+    def get_ordering(self):
+        self.ordering = self.request.GET.get('order_by')
+        return self.ordering
 
 
 class SignUpView(CreateView):

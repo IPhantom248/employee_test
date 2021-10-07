@@ -4,7 +4,7 @@ from mptt.models import MPTTModel, TreeForeignKey
 
 
 class EmployeeTree(MPTTModel):
-    class Meta():
+    class Meta:
         db_table = 'employee_tree'
         verbose_name = 'Сотрудник'
         verbose_name_plural = 'Сотрудники'
@@ -20,7 +20,6 @@ class EmployeeTree(MPTTModel):
 
     class MPTTMeta:
         order_insertion_by = ['full_name']
-
 
 
 mptt.register(EmployeeTree, order_insertion_by=['full_name'])

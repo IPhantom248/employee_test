@@ -52,29 +52,31 @@
 <script>
     $('#search-form').submit(function (e) {
         e.preventDefault();
-        searchData = $(this).find('input[name="s"]').val();
-
+        let searchData = $(this).find('#search-input').val();
         $.ajax({
-            url: '',
+            url: "{% url 'employees-api' %}",
             type: 'get',
             data: {s: searchData},
             success: function (response) {
-                $("tbody").empty()
+                let $tableBody = $("tbody")
+                $tableBody.empty()
                 if (response.length > 0) {
                     for (let i = 0; i < response.length; i++) {
-                        $("tbody").append('<tr>\n' +
-                            '        <th scope="row">' + response[i].pk + '</th>\n' +
-                            '        <td>' + response[i].fields.full_name + '</td>\n' +
-                            '        \n' +
-                            '        <td>' + response[i].fields.parent + '</td>\n' +
-                            '        \n' +
-                            '        <td>' + response[i].fields.salary + '</td>\n' +
-                            '        <td>' + response[i].fields.hired_at + '</td>\n' +
-                            '        <td>' + response[i].fields.level + '</td>\n' +
-                            '    </tr>')
+                        let parent = 'Boss'
+                        if (response[i].parent) {
+                            parent = response[i].parent.full_name
+                        }
+                        $tableBody.append('<tr>\n' +
+                            '<th scope="row">' + response[i].pk + '</th>\n' +
+                            '<td>' + response[i].full_name + '</td>\n' +
+                            '<td>' + parent + '</td>\n' +
+                            '<td>' + response[i].salary + '</td>\n' +
+                            '<td>' + response[i].hired_at + '</td>\n' +
+                            '<td>' + response[i].level + '</td>\n' +
+                            '</tr>')
                     }
                 } else {
-                    $("tbody").append("<div>Ничего не найдено</div>")
+                    $tableBody.append("<div>Ничего не найдено</div>")
                 }
             }
         })
