@@ -22,6 +22,7 @@ class EmployeeTree(MPTTModel):
         order_insertion_by = ['full_name']
 
 
+
 mptt.register(EmployeeTree, order_insertion_by=['full_name'])
 
 

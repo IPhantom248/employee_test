@@ -45,30 +45,40 @@
     {% endfor %}
     </tbody>
 </table>
+
+
+<script src="https://code.jquery.com/jquery-3.6.0.js" integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk="
+        crossorigin="anonymous"></script>
+<script>
+    $('#search-form').submit(function (e) {
+        e.preventDefault();
+        searchData = $(this).find('input[name="s"]').val();
+
+        $.ajax({
+            url: '',
+            type: 'get',
+            data: {s: searchData},
+            success: function (response) {
+                $("tbody").empty()
+                if (response.length > 0) {
+                    for (let i = 0; i < response.length; i++) {
+                        $("tbody").append('<tr>\n' +
+                            '        <th scope="row">' + response[i].pk + '</th>\n' +
+                            '        <td>' + response[i].fields.full_name + '</td>\n' +
+                            '        \n' +
+                            '        <td>' + response[i].fields.parent + '</td>\n' +
+                            '        \n' +
+                            '        <td>' + response[i].fields.salary + '</td>\n' +
+                            '        <td>' + response[i].fields.hired_at + '</td>\n' +
+                            '        <td>' + response[i].fields.level + '</td>\n' +
+                            '    </tr>')
+                    }
+                } else {
+                    $("tbody").append("<div>Ничего не найдено</div>")
+                }
+            }
+        })
+    })
+</script>
 </body>
 </html>
-
-<!-- <table class="table">
-    <thead>
-      <tr>
-        <th scope="col">#</th>
-        <th scope="col">First</th>
-        <th scope="col">Last</th>
-        <th scope="col">Handle</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <th scope="row">1</th>
-        <td>Mark</td>
-        <td>Otto</td>
-        <td>@mdo</td>
-      </tr>
-      <tr>
-        <th scope="row">2</th>
-        <td>Jacob</td>
-        <td>Thornton</td>
-        <td>@fat</td>
-      </tr>
-    </tbody>
-  </table> -->

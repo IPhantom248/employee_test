@@ -15,10 +15,10 @@
 
         {% if request.path == employees_detail_url %}
         <div class="mr-4">
-            <form class="form-inline" action="{% url 'employees-detail' %}" method="get">
+            <form class="form-inline" action="{% url 'employees-detail' %}" method="get" id="search-form">
                 <input class="form-control mr-sm-2" type="search" name="s" placeholder="Search..."
                        aria-label="Search">
-                <button class="btn btn-dark  my-2 my-sm-0" type="submit">
+                <button class="btn btn-dark  my-2 my-sm-0" id="search-btn" type="submit">
                     <i class="fas fa-search" aria-hidden="true"></i>
                 </button>
             </form>
@@ -26,3 +26,4 @@
         {% endif %}
     </nav>
 </header>
+
