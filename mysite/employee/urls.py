@@ -1,6 +1,6 @@
 from django.urls import path
 from employee.views import get_all_employees, get_all_employees_test, EmployeesListView, SignUpView, LoginView, \
-    user_logout, EmployeeListApiView
+    user_logout, EmployeeListApiView, EmployeeTreeApiView
 
 urlpatterns = [
     path('', get_all_employees, name="employees-home"),
@@ -9,6 +9,7 @@ urlpatterns = [
     path('signup/', SignUpView.as_view(), name='signup'),
     path('login/', LoginView.as_view(), name='login'),
     path('logout/', user_logout, name='logout'),
-    path('api/search/', EmployeeListApiView.as_view(), name="employees-api")
+    path('api/search/', EmployeeListApiView.as_view(), name="employees-api"),
+    path('api/tree/', EmployeeTreeApiView.as_view(), name='employees-api-tree')
 
 ]

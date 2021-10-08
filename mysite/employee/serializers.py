@@ -11,7 +11,8 @@ class ParentSerializer(serializers.ModelSerializer):  # Этот класс ну
 class EmployeeTreeSerializer(serializers.ModelSerializer):
     parent = ParentSerializer(read_only=True)
     hired_at = serializers.DateField('%B %d, %Y')
+    is_leaf = serializers.BooleanField(source="is_leaf_node")
 
     class Meta:
         model = EmployeeTree
-        fields = ('pk', 'full_name', 'hired_at', 'salary', 'level', 'parent')
+        fields = ('pk', 'full_name', 'hired_at', 'salary', 'level', 'parent', 'is_leaf')

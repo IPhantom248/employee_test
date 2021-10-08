@@ -27,6 +27,25 @@ def get_all_employees_test(request):
     return render(request, 'employee/test_nest.html', {'object_list': object_list})
 
 
+class EmployeeTreeApiView(ListAPIView):
+    queryset = EmployeeTree.objects.all()
+
+    def get(self, request, *args, **kwargs):
+        if request.is_ajax():
+            serializer = EmployeeTreeSerializer(self.get_queryset(), many=True)
+            return Response(serializer.data, content_type='application/json')
+        else:
+            return super().get(self, request, *args, **kwargs)
+
+    def get_queryset(self):
+        if self.request.is_ajax():
+            pk = self.request.GET.get('pk')
+            children_queryset = EmployeeTree.objects.filter(parent=pk)
+            return children_queryset
+        else:
+            return super().get_queryset()
+
+
 class EmployeeListApiView(LoginRequiredMixin, ListAPIView):
     queryset = EmployeeTree.objects.all()
 

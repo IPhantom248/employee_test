@@ -4,7 +4,8 @@
     {% load static %}
     <link rel="stylesheet" type="text/css" href="{% static 'employee/style.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'employee/main.css' %}">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+          integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
     <link rel="stylesheet" type="text/css"
           href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
@@ -20,11 +21,11 @@
     <div class="dd mt-2" id="nestable">
         <ol class="dd-list">
             {% recursetree object_list %}
-            <li class="dd-item">
+            <li class="dd-item" data-id="{{node.pk}}">
                 <div class="dd-handle">{{ node.full_name }} | level: {{node.level}}</div>
                 {% if not node.is_leaf_node and node.get_children%}
                 <ol class="dd-list">
-                    {{children}}
+
                 </ol>
                 {% endif %}
             </li>
@@ -33,14 +34,40 @@
     </div>
 
     <script>
-    $(document).ready(function()
-    {
-        // activate Nestable for list 1
-        $('#nestable').nestable({
-            group: 1
-        })
-        .on('change', updateOutput);
-    });
+        $(document).ready(function () {
+            // activate Nestable for list 1
+            $('#nestable').nestable({});
+            $('#nestable').nestable('collapseAll');
+            // https://moxiemaks.ru/jquery/sobytija-dlja-dinamicheski-dobavlennyh-jelementov-v-jquery/
+
+            $("body").on("click", 'button[data-action="expand"]', function () {
+                let $parent = $(this).parent()
+                let dataId = $parent.attr('data-id')
+                console.log('dataId')
+                $.ajax({
+                    url: "{% url 'employees-api-tree' %}",
+                    type: 'get',
+                    data: {pk: dataId},
+                    success: function (response) {
+                        $parent.find('.dd-list').remove()
+                        $parent.append('<ol class="dd-list">\n' +
+                            '                            </ol>')
+                        $ddList = $parent.find('.dd-list')
+                        for (let i = 0; i < response.length; i++) {
+                            $ddList.append('<li class="dd-item" data-id="' + response[i].pk + '"><ol class="dd-list" style="display: none;">\n' +
+                                '\n' +
+                                '                </ol><div class="dd-handle">' + response[i].full_name + ' | level: ' + response[i].level + '</div></li>\n')
+
+                            if (response[i].is_leaf == false) {
+                                $ddList.find('.dd-item').last().prepend('<button data-action="expand" type="button" style="display: block;">Expand</button>')
+                                $ddList.find('.dd-item').last().prepend('<button data-action="collapse" type="button" style="display: none;">Collapse</button>')
+                            }
+                        }
+                    }
+                })
+
+            })
+        });
     </script>
 </main>
 </body>
