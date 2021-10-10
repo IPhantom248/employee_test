@@ -15,4 +15,4 @@ class EmployeeTreeSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = EmployeeTree
-        fields = ('pk', 'full_name', 'hired_at', 'salary', 'level', 'parent', 'is_leaf')
+        fields = ('pk', 'full_name', 'hired_at', 'salary', 'level', 'parent', 'is_leaf', 'image')
