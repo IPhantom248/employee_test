@@ -73,7 +73,17 @@ class EmployeeListApiView(LoginRequiredMixin, ListAPIView):
         else:
             return super().get_queryset()
 
-
+    def get_ordering(self):
+        self.ordering = self.request.GET.get('order_by')
+        return self.ordering
+# class EmployeeListApi1View(ListAPIView):
+#
+#     def get(self, request, *args, **kwargs):
+#         if request.is_ajax():
+#             serializer = EmployeeTreeSerializer(self.get_queryset(), many=True)
+#             return Response(serializer.data, content_type='application/json')
+#         else:
+#             return super().get(self, request, *args, **kwargs)
 class EmployeesListView(LoginRequiredMixin, ListView):
     model = EmployeeTree
     template_name = "employee/employees.html"  # <app>/<model>_<viewtype>.html
