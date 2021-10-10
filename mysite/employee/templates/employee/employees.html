@@ -19,14 +19,19 @@
 <table class="table table-striped mt-4">
     <thead class="thead-dark">
     <tr>
-        <th scope="col">#</th>
-        <th scope="col"><a href="?order_by=full_name" id="mine_btn">Full Name</a>
-            <button type="submit" class="btn btn-primary" >FN</button>
+        <th scope="col">
+            <div class="btn-group-toggle" data-toggle="buttons">
+                <label class="btn btn-secondary active">
+                  <input type="checkbox" checked>
+                  <img src="../../../static/employee/filterUD.svg" alt="">
+                </label>
+            </div>
         </th>
-        <th scope="col"><a href="?order_by=parent">Boss Name</a></th>
-        <th scope="col"><a href="?order_by=-salary">Salary</a></th>
-        <th scope="col"><a href="?order_by=hired_at">Hired</a></th>
-        <th scope="col"><a href="?order_by=level">Level</a></th>
+        <th scope="col"><a href="full_name" class="top_raw">Full Name</a> </th>
+        <th scope="col"><a href="parent" class="top_raw">Boss Name</a></th>
+        <th scope="col"><a href="salary" class="top_raw">Salary</a></th>
+        <th scope="col"><a href="hired_at" class="top_raw">Hired</a></th>
+        <th scope="col"><a href="level" class="top_raw">Level</a></th>
     </tr>
     </thead>
     <tbody>
@@ -51,55 +56,55 @@
 <script src="https://code.jquery.com/jquery-3.6.0.js" integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk="
         crossorigin="anonymous"></script>
 <script>
-<!--    $('#search-form').submit(function (e) {-->
-<!--        e.preventDefault();-->
-<!--        let searchData = $(this).find('#search-input').val();-->
-<!--        console.log(searchData);-->
-<!--        $.ajax({-->
-<!--            url: "{% url 'employees-api' %}",-->
-<!--            type: 'get',-->
-<!--            data: {s: searchData},-->
-<!--            success: function (response) {-->
-<!--                let $tableBody = $("tbody")-->
-<!--                $tableBody.empty()-->
-<!--                if (response.length > 0) {-->
-<!--                    for (let i = 0; i < response.length; i++) {-->
-<!--                        let parent = 'Boss'-->
-<!--                        if (response[i].parent) {-->
-<!--                            parent = response[i].parent.full_name-->
-<!--                        }-->
-<!--                        $tableBody.append('<tr>\n' +-->
-<!--                            '<th scope="row">' + response[i].pk + '</th>\n' +-->
-<!--                            '<td>' + response[i].full_name + '</td>\n' +-->
-<!--                            '<td>' + parent + '</td>\n' +-->
-<!--                            '<td>' + response[i].salary + '</td>\n' +-->
-<!--                            '<td>' + response[i].hired_at + '</td>\n' +-->
-<!--                            '<td>' + response[i].level + '</td>\n' +-->
-<!--                            '</tr>')-->
-<!--                    }-->
-<!--                } else {-->
-<!--                    $tableBody.append("<div>Ничего не найдено</div>")-->
-<!--                }-->
-<!--            }-->
-<!--        })-->
-<!--    })-->
-<!--</script>-->
-<!--<script src="https://code.jquery.com/jquery-3.6.0.js" integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk="-->
-<!--        crossorigin="anonymous"></script>-->
+   $('#search-form').submit(function (e) {
+       e.preventDefault();
+       let searchData = $(this).find('#search-input').val();
+       console.log(searchData);
+       $.ajax({
+           url: "{% url 'employees-api' %}",
+            type: 'get',
+           data: {s: searchData},
+           success: function (response) {
+               let $tableBody = $("tbody")
+               $tableBody.empty()
+               if (response.length > 0) {
+                   for (let i = 0; i < response.length; i++) {
+                       let parent = 'Boss'
+                       if (response[i].parent) {
+                           parent = response[i].parent.full_name
+                       }
+                       $tableBody.append('<tr>\n' +
+                           '<th scope="row">' + response[i].pk + '</th>\n' +
+                           '<td>' + response[i].full_name + '</td>\n' +
+                           '<td>' + parent + '</td>\n' +
+                           '<td>' + response[i].salary + '</td>\n' +
+                           '<td>' + response[i].hired_at + '</td>\n' +
+                           '<td>' + response[i].level + '</td>\n' +
+                           '</tr>')
+                   }
+               } else {
+                   $tableBody.append("<div>Ничего не найдено</div>")
+               }
+           }
+       })
+   })
+</script>
 <script>
-    $('#mine_btn').click(function (e) {
+    $('.top_raw').click(function (e) {
         let a = "8";
         console.log(a);
         e.preventDefault();
         let order_by = $(this).attr('href');
-
-        const urlParams = new URLSearchParams(window.location.search);
-        // let order_by = urlParams.get('order_by');
+        let searchData = $('#search-form').find('#search-input').val();
+        if ($('th').find('input').prop('checked') == true){
+            order_by = '-' + order_by
+        }
         console.log(order_by);
         $.ajax({
             url: "{% url 'employees-api' %}",
             type: 'get',
-            data: {order_by: order_by},
+            data: {order_by: order_by,
+            s: searchData},
             success: function (response) {
                 let $tableBody = $("tbody")
                 $tableBody.empty()
@@ -124,6 +129,14 @@
             }
         })
     })
+</script>
+<script>
+    $('th').find('img').click(function(){
+        if ($('th').find('input').prop('checked') == true){
+            $('th').find('img').attr('src', "../../../static/employee/filterDU.svg")
+        } else { $('th').find('img').attr('src', "../../../static/employee/filterUD.svg")
+        }
+   })  
 </script>
 </body>
 </html>

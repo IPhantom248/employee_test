@@ -23,7 +23,7 @@
             {% recursetree object_list %}
             <li class="dd-item" data-id="{{node.pk}}">
                 <div class="dd-handle">{{ node.full_name }} | level: {{node.level}}</div>
-                {% if not node.is_leaf_node and node.get_children%}
+                {% if not node.is_leaf_node %}
                 <ol class="dd-list">
 
                 </ol>
