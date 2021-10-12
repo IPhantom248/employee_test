@@ -1,15 +1,24 @@
 {% extends 'employee/base.html' %}
+{% load static %}
 {% block content %}
 <table class="table table-striped mt-4">
     <thead class="thead-dark">
     <tr>
-        <th scope="col">#</th>
-        <th scope="col"><a href="?order_by=full_name">Full Name</a></th>
-        <th scope="col"><a href="?order_by=parent">Boss Name</a></th>
-        <th scope="col"><a href="?order_by=-salary">Salary</a></th>
-        <th scope="col"><a href="?order_by=hired_at">Hired</a></th>
-        <th scope="col"><a href="?order_by=level">Level</a></th>
-        <th scope="col">Action</th>
+        <th scope="col">
+            <div class="btn-group-toggle" data-toggle="buttons">
+                <label class="btn btn-secondary active">
+                  <input type="checkbox" checked>
+                  <img src="{% static 'employee/filterUD.svg' %}" alt="">
+                </label>
+            </div>
+        </th>
+        <th scope="col"><a href="full_name" class="top_raw">Full Name</a> </th>
+        <th scope="col"><a href="parent" class="top_raw">Boss Name</a></th>
+        <th scope="col"><a href="salary" class="top_raw">Salary</a></th>
+        <th scope="col"><a href="hired_at" class="top_raw">Hired</a></th>
+        <th scope="col"><a href="level" class="top_raw">Level</a></th>
+        <th scope="col"><a href="#" class="top_raw">Foto</a></th>
+        <th scope="col"><a href="#" class="top_raw">Action</a></th>
     </tr>
     </thead>
     <tbody>
@@ -25,8 +34,9 @@
         <td>{{ employee.salary }}</td>
         <td>{{ employee.hired_at|date:"F d, Y" }}</td>
         <td>{{ employee.level }}</td>
+        <td><img class="rounded-circle article-img" src="{{ employee.image.url }}"></td>
         <td>
-            <a href="{% url 'employees-edit' employee.pk %}">edit</a>
+            <a href="{% url 'employees-edit' employee.pk %}">edit</a><br>
             <a href="{% url 'employees-delete' employee.pk %}">delete</a>
         </td>
     </tr>
@@ -40,6 +50,7 @@
         crossorigin="anonymous"></script>
 <script>
     function printResult(response) {
+        console.log('begin printing result\n')
         let $tableBody = $("tbody")
         $tableBody.empty()
         if (response.results.length > 0) {
@@ -55,9 +66,10 @@
                     '<td>' + response.results[i].salary + '</td>\n' +
                     '<td>' + response.results[i].hired_at + '</td>\n' +
                     '<td>' + response.results[i].level + '</td>\n' +
+                    '<td><img class="rounded-circle article-img" src="' + response.results[i].image + '"></td>\n' +
                     '<td>\n' +
-                    '<a href="/employees/'+ response.results[i].pk +'/edit">edit</a>\n' +
-                    '<a href="/employees/'+ response.results[i].pk +'/delete">delete</a>\n' +
+                    '<a href="/employees/'+ response.results[i].pk +'/edit">edit</a><br>' +
+                    '<a href="/employees/'+ response.results[i].pk +'/delete">delete</a>' +
                     '</td>' +
                     '</tr>'
                 )
@@ -110,14 +122,46 @@
     $('#search-form').submit(function (e) {
         e.preventDefault();
         let searchData = $(this).find('#search-input').val();
+        console.log(searchData);
         $.ajax({
             url: "{% url 'employees-api' %}",
             type: 'get',
             data: {s: searchData},
             success: function (response) {
+                let $tableBody = $("tbody")
+                $tableBody.empty()
                 printResult(response)
             }
         })
     })
+</script>
+
+<script>
+    $('.top_raw').click(function (e) {
+        e.preventDefault();
+        let order_by = $(this).attr('href');
+        let searchData = $('#search-form').find('#search-input').val();
+        if ($('th').find('input').prop('checked') == true){
+            order_by = '-' + order_by
+        }
+        console.log(order_by);
+        $.ajax({
+            url: "{% url 'employees-api' %}",
+            type: 'get',
+            data: {order_by: order_by,
+            s: searchData},
+            success: function (response) {
+                printResult(response)
+            }
+        })
+    })
+</script>
+<script>
+    $('th').find('img').click(function(){
+        if ($('th').find('input').prop('checked') == true){
+            $('th').find('img').attr('src', "{% static 'employee/filterDU.svg' %}" )
+        } else { $('th').find('img').attr('src', "{% static 'employee/filterUD.svg' %}")
+        }
+   })  
 </script>
 {% endblock %}

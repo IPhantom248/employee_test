@@ -127,25 +127,40 @@ class EmployeeListApiView(LoginRequiredMixin, ListAPIView):
             return super().get(self, request, *args, **kwargs)
 
     def get_queryset(self):
+        ordering = self.get_ordering()
         if self.request.GET.get('s'):
             search = self.request.GET.get('s')
             # https://docs.djangoproject.com/en/3.2/topics/db/queries/
             if search.isdigit():
-                return super().get_queryset().filter(Q(level=search) | Q(salary=search) | Q(pk=search))
+                if ordering:
+                    return super().get_queryset().filter(Q(pk=search) | Q(level=search) | Q(salary=search)).order_by(oredering)
+                else:
+                    return super().get_queryset().filter(Q(pk=search) | Q(level=search) | Q(salary=search))
             elif search.isalpha() or ''.join(search.split()).isalpha():  # Либо введено имя/фамилия, либо и то и то
-                return super().get_queryset().filter(full_name__icontains=search)
+                if ordering:
+                    return super().get_queryset().filter(full_name__icontains=search).order_by(ordering)
+                else:
+                    return super().get_queryset().filter(full_name__icontains=search)
             else:  # Сюда попадаем если search содержит знаки
                 try:
                     date = parse(search).date()
-                    return super().get_queryset().filter(hired_at=date)
+                    if ordering:
+                        return super().get_queryset().filter(hired_at=date).order_by(ordering)
+                    else:
+                        return super().get_queryset().filter(hired_at=date)
                 except dateutil.parser.ParserError:
                     return None
         else:
-            return super().get_queryset()
+            return super().get_queryset().order_by(ordering)
+
+    def get_ordering(self):
+        self.ordering = self.request.GET.get('order_by')
+        return self.ordering
 
 
 class EmployeesListView(LoginRequiredMixin, ListView):
     model = EmployeeTree
+    login_url = 'login'
     template_name = "employee/employees.html"  # <app>/<model>_<viewtype>.html
     context_object_name = "employees"
     paginate_by = 10

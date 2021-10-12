@@ -1,0 +1,7 @@
+<svg width="16" height="16" xmlns="http://www.w3.org/2000/svg" class="bi bi-filter" fill="currentColor">
+
+ <g>
+  <title>Layer 1</title>
+  <path transform="rotate(-180, 8, 7.5)" id="svg_1" d="m6,10.5a0.5,0.5 0 0 1 0.5,-0.5l3,0a0.5,0.5 0 0 1 0,1l-3,0a0.5,0.5 0 0 1 -0.5,-0.5zm-2,-3a0.5,0.5 0 0 1 0.5,-0.5l7,0a0.5,0.5 0 0 1 0,1l-7,0a0.5,0.5 0 0 1 -0.5,-0.5zm-2,-3a0.5,0.5 0 0 1 0.5,-0.5l11,0a0.5,0.5 0 0 1 0,1l-11,0a0.5,0.5 0 0 1 -0.5,-0.5z"/>
+ </g>
+</svg>

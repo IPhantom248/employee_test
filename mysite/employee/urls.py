@@ -1,6 +1,8 @@
 from django.urls import path
 from employee.views import get_all_employees, get_all_employees_test, EmployeesListView, SignUpView, LoginView, \
     user_logout, EmployeeListApiView, EmployeeTreeApiView, EmployeesDeleteView, EmployeesEditView
+from django.conf import settings
+from django.conf.urls.static import static
 
 urlpatterns = [
     path('', get_all_employees, name="employees-home"),
@@ -15,3 +17,5 @@ urlpatterns = [
     path('employees/<int:pk>/edit', EmployeesEditView.as_view(), name='employees-edit')
 
 ]
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -16,8 +16,8 @@ class Command(BaseCommand):
                 random_parent_queryset = EmployeeTree.objects.filter(level=rand_level)
                 random_parent = random_parent_queryset[random.randint(0, random_parent_queryset.count()-1)]
             EmployeeTree.objects.create(full_name=fake.name(), hired_at=fake.date_time(),
-                                        salary=random.randint(1000, 5000), parent=random_parent)
-            if not i % 100:
+                                        salary=random.randint(1000, 5000), parent=random_parent, image='default.jpg')
+            if not i % 10:
                 print(i)
         print("Done!")
 

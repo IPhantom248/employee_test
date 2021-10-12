@@ -23,10 +23,10 @@ class SignUpForm(UserCreationForm):
 class EmployeesEditForm(forms.ModelForm):
     class Meta:
         model = EmployeeTree
-        fields = ['full_name', 'salary', 'hired_at']
+        fields = ['full_name', 'salary', 'hired_at', 'image']
         widgets = {
             'full_name': forms.TextInput(attrs={'class': 'form-control'}),
             'salary': forms.TextInput(attrs={'class': 'form-control'}),
             'parent': forms.Select(attrs={'class': 'form-control'}),
             'hired_at': forms.DateInput(attrs={'class': 'form-control'})
-        }
+        }        
