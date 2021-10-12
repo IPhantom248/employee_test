@@ -1,21 +1,5 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    {% load static %}
-    <link rel="stylesheet" type="text/css" href="{% static 'employee/style.css' %}">
-    <link rel="stylesheet" type="text/css" href="{% static 'employee/main.css' %}">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
-          integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-    <link rel="stylesheet" type="text/css"
-          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
-
-    <script src="{% static 'employee/jquery.nestable.js' %}"></script>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
-{%include 'inc/_nav.html'%}
+{% extends 'employee/base.html' %}
+{% block content %}
 <main>
     {% load mptt_tags %}
     <div class="dd mt-2" id="nestable">
@@ -43,7 +27,6 @@
             $("body").on("click", 'button[data-action="expand"]', function () {
                 let $parent = $(this).parent()
                 let dataId = $parent.attr('data-id')
-                console.log('dataId')
                 $.ajax({
                     url: "{% url 'employees-api-tree' %}",
                     type: 'get',
@@ -70,5 +53,4 @@
         });
     </script>
 </main>
-</body>
-</html>
+{% endblock %}

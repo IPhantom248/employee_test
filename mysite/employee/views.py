@@ -1,13 +1,20 @@
+import sys
+
 import dateutil.parser
 from django.contrib.auth import login, logout
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.core.paginator import Paginator
+from django.http import HttpResponseRedirect
 from django.shortcuts import render, redirect
-from django.urls import reverse
+from django.urls import reverse, reverse_lazy
+from django.utils.functional import cached_property
 from rest_framework.generics import ListAPIView
+from rest_framework.pagination import PageNumberPagination
+from rest_framework.utils.urls import replace_query_param, remove_query_param
 
-from employee.forms import SignUpForm, LoginForm
+from employee.forms import SignUpForm, LoginForm, EmployeesEditForm
 from employee.models import EmployeeTree
-from django.views.generic import ListView, CreateView, FormView
+from django.views.generic import ListView, CreateView, FormView, DeleteView, UpdateView
 from django.contrib.auth.models import User
 from django.db.models import Q
 from rest_framework.response import Response
@@ -25,6 +32,38 @@ def get_all_employees(request):
 def get_all_employees_test(request):
     object_list = EmployeeTree.objects.all()
     return render(request, 'employee/test_nest.html', {'object_list': object_list})
+
+
+class EmployeesEditView(UpdateView):
+    model = EmployeeTree
+    template_name = 'employee/edit.html'
+    form_class = EmployeesEditForm
+    success_url = reverse_lazy('employees-detail')
+
+    # def form_valid(self, form):
+    #     obj = form.save(commit=False)
+    #     print(obj.parent)
+    #     self.object = form.save()
+    #     return HttpResponseRedirect(self.get_success_url())
+
+
+class EmployeesDeleteView(DeleteView):
+    model = EmployeeTree
+    template_name = 'employee/delete.html'
+    success_url = reverse_lazy('employees-detail')
+
+    def delete(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        if self.object.is_leaf_node():
+            return super().delete(self, request, *args, **kwargs)
+        else:
+            parent = self.object.parent
+            children = self.object.get_children()
+            for child in children:
+                child.move_to(parent, position='first-child')
+            self.object.delete()
+            success_url = self.get_success_url()
+            return HttpResponseRedirect(success_url)
 
 
 class EmployeeTreeApiView(ListAPIView):
@@ -46,13 +85,44 @@ class EmployeeTreeApiView(ListAPIView):
             return super().get_queryset()
 
 
+
+class SmallResultsSetPagination(PageNumberPagination):
+    page_size = 10
+    page_size_query_param = 'page_size'
+
+
+
+    def get_paginated_response(self, data):
+        url = self.request.build_absolute_uri()
+        last_link = replace_query_param(url, self.page_query_param, 'last')
+        first_link = remove_query_param(url, self.page_query_param)
+        if first_link == url:
+            first_link = None
+        if last_link == url:
+            last_link = None
+        return Response({
+            'links': {
+                'first': first_link,
+                'next': self.get_next_link(),
+                'previous': self.get_previous_link(),
+                'last': last_link,
+            },
+            'count': self.page.paginator.num_pages,
+            'current_page': self.page.number,
+            'results': data
+        })
+
+
 class EmployeeListApiView(LoginRequiredMixin, ListAPIView):
     queryset = EmployeeTree.objects.all()
+    pagination_class = SmallResultsSetPagination
 
     def get(self, request, *args, **kwargs):
         if request.is_ajax():
             serializer = EmployeeTreeSerializer(self.get_queryset(), many=True)
-            return Response(serializer.data, content_type='application/json')
+            page = self.paginate_queryset(serializer.data)
+            # return Response(serializer.data, content_type='application/json')
+            return self.get_paginated_response(page)
         else:
             return super().get(self, request, *args, **kwargs)
 
@@ -61,7 +131,7 @@ class EmployeeListApiView(LoginRequiredMixin, ListAPIView):
             search = self.request.GET.get('s')
             # https://docs.djangoproject.com/en/3.2/topics/db/queries/
             if search.isdigit():
-                return super().get_queryset().filter(Q(pk=search) | Q(level=search) | Q(salary=search))
+                return super().get_queryset().filter(Q(level=search) | Q(salary=search) | Q(pk=search))
             elif search.isalpha() or ''.join(search.split()).isalpha():  # Либо введено имя/фамилия, либо и то и то
                 return super().get_queryset().filter(full_name__icontains=search)
             else:  # Сюда попадаем если search содержит знаки
@@ -78,6 +148,7 @@ class EmployeesListView(LoginRequiredMixin, ListView):
     model = EmployeeTree
     template_name = "employee/employees.html"  # <app>/<model>_<viewtype>.html
     context_object_name = "employees"
+    paginate_by = 10
 
     def get_ordering(self):
         self.ordering = self.request.GET.get('order_by')
