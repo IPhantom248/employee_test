@@ -4,21 +4,49 @@
 <table class="table table-striped mt-4">
     <thead class="thead-dark">
     <tr>
+        <th scope="col">#</th>
         <th scope="col">
             <div class="btn-group-toggle" data-toggle="buttons">
-                <label class="btn btn-secondary active">
-                    <input type="checkbox" checked>
-                    <img src="{% static 'employee/filterUD.svg' %}" alt="">
+                <label class="btn btn-secondary active">Full Name
+                    <input type="checkbox" checked id="full_name">
+                    <img src="{% static 'employee/filter_down.svg' %}" alt="">
                 </label>
             </div>
         </th>
-        <th scope="col"><a href="full_name" class="top_raw">Full Name</a></th>
-        <th scope="col"><a href="parent" class="top_raw">Boss Name</a></th>
-        <th scope="col"><a href="salary" class="top_raw">Salary</a></th>
-        <th scope="col"><a href="hired_at" class="top_raw">Hired</a></th>
-        <th scope="col"><a href="level" class="top_raw">Level</a></th>
-        <th scope="col"><a href="#" class="top_raw">Foto</a></th>
-        <th scope="col"><a href="#" class="top_raw">Action</a></th>
+        <th scope="col">
+            <div class="btn-group-toggle" data-toggle="buttons">
+                <label class="btn btn-secondary active">Boss Name
+                    <input type="checkbox" checked id="parent">
+                    <img src="{% static 'employee/filter_down.svg' %}" alt="">
+                </label>
+            </div>
+        </th>
+        <th scope="col">
+            <div class="btn-group-toggle" data-toggle="buttons">
+                <label class="btn btn-secondary active">Salary
+                    <input type="checkbox" checked id="salary">
+                    <img src="{% static 'employee/filter_down.svg' %}" alt="">
+                </label>
+            </div>
+        </th>
+        <th scope="col">
+            <div class="btn-group-toggle" data-toggle="buttons">
+                <label class="btn btn-secondary active">Hired
+                    <input type="checkbox" checked id="hired_at">
+                    <img src="{% static 'employee/filter_down.svg' %}" alt="">
+                </label>
+            </div>
+        </th>
+        <th scope="col">
+            <div class="btn-group-toggle" data-toggle="buttons">
+                <label class="btn btn-secondary active">Level
+                    <input type="checkbox" checked id="level">
+                    <img src="{% static 'employee/filter_down.svg' %}" alt="">
+                </label>
+            </div>
+        </th>
+        <th scope="col">Foto</th>
+        <th scope="col">Action</th>
     </tr>
     </thead>
     <tbody>
@@ -53,7 +81,7 @@
         page: null,
         s: null,
         order_by: null
-    }
+    };
 
     function getParams(dict) {
         let result = {}
@@ -66,7 +94,7 @@
     }
 
     function printResult(response) {
-        console.log(getParams(paramDict))
+        //console.log(getParams(paramDict))
         let $tableBody = $("tbody")
         $tableBody.empty()
         if (response.results.length > 0) {
@@ -127,7 +155,8 @@
         else {
             paramDict['page'] = event.target.text
         }
-
+        //console.log(paramDict)
+        //console.log(getParams(paramDict))
         $.ajax({
             url: "{% url 'employees-api' %}",
             type: 'get',
@@ -149,6 +178,8 @@
         paramDict['s'] = searchData
         paramDict['page'] = null
         paramDict['order_by'] = null
+        //console.log(paramDict)
+        //console.log(getParams(paramDict))
         $.ajax({
             url: "{% url 'employees-api' %}",
             type: 'get',
@@ -161,35 +192,25 @@
         })
     })
 
-    $('.top_raw').click(function (e) {
-        e.preventDefault();
-        let order_by = $(this).attr('href');
-        paramDict['page'] = null
-        let searchData = $('#search-form').find('#search-input').val();
-        if ($('th').find('input').prop('checked') == true) {
-            order_by = '-' + order_by
-        }
-        paramDict['page'] = null
-        paramDict['order_by'] = order_by
+    $(":checkbox").click(function () {
+        //e.preventDefault();
+        paramDict['page'] = null;
+        paramDict['order_by'] = $(this).attr('id');
+        let dataDict = getParams(paramDict);
+        if ($(this).prop('checked') == true) {
+            $(this).next().attr('src', "{% static 'employee/filter_down.svg' %}");
+            dataDict['order_by'] = '-' + dataDict['order_by'];
+        } else{ $(this).next().attr('src', "{% static 'employee/filter_up.svg' %}") }
+        console.log(paramDict)
+        console.log(dataDict)
         $.ajax({
             url: "{% url 'employees-api' %}",
             type: 'get',
-            data: {
-                order_by: order_by,
-                s: searchData
-            },
+            data: dataDict,
             success: function (response) {
                 printResult(response)
             }
         })
-    })
-
-    $('th').find('img').click(function () {
-        if ($('th').find('input').prop('checked') == true) {
-            $('th').find('img').attr('src', "{% static 'employee/filterDU.svg' %}")
-        } else {
-            $('th').find('img').attr('src', "{% static 'employee/filterUD.svg' %}")
-        }
     })
 </script>
 {% endblock %}

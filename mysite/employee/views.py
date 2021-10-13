@@ -130,27 +130,22 @@ class EmployeeListApiView(LoginRequiredMixin, ListAPIView):
             search = self.request.GET.get('s')
             # https://docs.djangoproject.com/en/3.2/topics/db/queries/
             if search.isdigit():
-                if ordering:
-                    return super().get_queryset().filter(Q(pk=search) | Q(level=search) | Q(salary=search)).order_by(ordering)
-                else:
-                    return super().get_queryset().filter(Q(pk=search) | Q(level=search) | Q(salary=search))
+                queryset = super().get_queryset().filter(Q(pk=search) | Q(level=search) | Q(salary=search))
             elif search.isalpha() or ''.join(search.split()).isalpha():  # Либо введено имя/фамилия, либо и то и то
-                if ordering:
-                    return super().get_queryset().filter(full_name__icontains=search).order_by(ordering)
-                else:
-                    return super().get_queryset().filter(full_name__icontains=search)
+                queryset = super().get_queryset().filter(full_name__icontains=search)
             else:  # Сюда попадаем если search содержит знаки
                 try:
                     date = parse(search).date()
-                    if ordering:
-                        return super().get_queryset().filter(hired_at=date).order_by(ordering)
-                    else:
-                        return super().get_queryset().filter(hired_at=date)
+                    queryset = super().get_queryset().filter(hired_at=date)
                 except dateutil.parser.ParserError:
                     return None
         else:
-            return super().get_queryset()
+            queryset = super().get_queryset()
+        if ordering:
+            queryset = queryset.order_by(ordering)
+        return queryset
 
+    
     def get_ordering(self):
         self.ordering = self.request.GET.get('order_by')
         return self.ordering
@@ -162,10 +157,6 @@ class EmployeesListView(LoginRequiredMixin, ListView):
     template_name = "employee/employees.html"  # <app>/<model>_<viewtype>.html
     context_object_name = "employees"
     paginate_by = 10
-
-    def get_ordering(self):
-        self.ordering = self.request.GET.get('order_by')
-        return self.ordering
 
 
 class SignUpView(CreateView):
@@ -180,9 +171,7 @@ class SignUpView(CreateView):
 class LoginView(FormView):
     form_class = LoginForm
     template_name = 'employee/login.html'
-
-    def get_success_url(self):
-        return reverse('employees-home')
+    success_url = 'employees-home'
 
     def form_valid(self, form):
         login(self.request, form.get_user())
