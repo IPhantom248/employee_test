@@ -2,6 +2,7 @@
 <!-- Latest compiled and minified CSS -->
 
 {% block content %}
+<img src="{{ object.image.url }}">
 <div class="mt-4">
     <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
@@ -10,8 +11,4 @@
         <a href="{% url 'employees-detail' %}" class="btn btn-outline-secondary">Cancel</a>
     </form>
 </div>
-
-
-
-
 {% endblock %}

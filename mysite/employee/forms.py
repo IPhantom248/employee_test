@@ -2,6 +2,8 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth.models import User
 
+from mptt.forms import TreeNodeChoiceField
+
 from employee.models import EmployeeTree
 
 
@@ -23,10 +25,11 @@ class SignUpForm(UserCreationForm):
 class EmployeesEditForm(forms.ModelForm):
     class Meta:
         model = EmployeeTree
-        fields = ['full_name', 'salary', 'hired_at', 'image']
+        fields = ['full_name', 'salary', 'hired_at', 'parent', 'image']
         widgets = {
             'full_name': forms.TextInput(attrs={'class': 'form-control'}),
             'salary': forms.TextInput(attrs={'class': 'form-control'}),
             'parent': forms.Select(attrs={'class': 'form-control'}),
-            'hired_at': forms.DateInput(attrs={'class': 'form-control'})
+            'hired_at': forms.DateInput(attrs={'class': 'form-control'}),
+            # 'parent' : TreeNodeChoiceField(model.objects.all())
         }        
