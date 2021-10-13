@@ -102,10 +102,8 @@ class SmallResultsSetPagination(PageNumberPagination):
             last_link = None
         return Response({
             'links': {
-                'first': first_link,
                 'next': self.get_next_link(),
-                'previous': self.get_previous_link(),
-                'last': last_link,
+                'previous': self.get_previous_link()
             },
             'count': self.page.paginator.num_pages,
             'current_page': self.page.number,
@@ -133,7 +131,7 @@ class EmployeeListApiView(LoginRequiredMixin, ListAPIView):
             # https://docs.djangoproject.com/en/3.2/topics/db/queries/
             if search.isdigit():
                 if ordering:
-                    return super().get_queryset().filter(Q(pk=search) | Q(level=search) | Q(salary=search)).order_by(oredering)
+                    return super().get_queryset().filter(Q(pk=search) | Q(level=search) | Q(salary=search)).order_by(ordering)
                 else:
                     return super().get_queryset().filter(Q(pk=search) | Q(level=search) | Q(salary=search))
             elif search.isalpha() or ''.join(search.split()).isalpha():  # Либо введено имя/фамилия, либо и то и то
@@ -151,7 +149,7 @@ class EmployeeListApiView(LoginRequiredMixin, ListAPIView):
                 except dateutil.parser.ParserError:
                     return None
         else:
-            return super().get_queryset().order_by(ordering)
+            return super().get_queryset()
 
     def get_ordering(self):
         self.ordering = self.request.GET.get('order_by')
