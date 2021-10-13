@@ -34,17 +34,18 @@ def get_all_employees_test(request):
     return render(request, 'employee/test_nest.html', {'object_list': object_list})
 
 
+class EmployeesCreateView(CreateView):
+    model = EmployeeTree
+    template_name = 'employee/create.html'
+    form_class = EmployeesEditForm
+    success_url = reverse_lazy('employees-detail')
+
+
 class EmployeesEditView(UpdateView):
     model = EmployeeTree
     template_name = 'employee/edit.html'
     form_class = EmployeesEditForm
     success_url = reverse_lazy('employees-detail')
-
-    # def form_valid(self, form):
-    #     obj = form.save(commit=False)
-    #     print(obj.parent)
-    #     self.object = form.save()
-    #     return HttpResponseRedirect(self.get_success_url())
 
 
 class EmployeesDeleteView(DeleteView):
@@ -85,21 +86,11 @@ class EmployeeTreeApiView(ListAPIView):
             return super().get_queryset()
 
 
-
 class SmallResultsSetPagination(PageNumberPagination):
     page_size = 10
     page_size_query_param = 'page_size'
 
-
-
     def get_paginated_response(self, data):
-        url = self.request.build_absolute_uri()
-        last_link = replace_query_param(url, self.page_query_param, 'last')
-        first_link = remove_query_param(url, self.page_query_param)
-        if first_link == url:
-            first_link = None
-        if last_link == url:
-            last_link = None
         return Response({
             'links': {
                 'next': self.get_next_link(),
@@ -119,7 +110,6 @@ class EmployeeListApiView(LoginRequiredMixin, ListAPIView):
         if request.is_ajax():
             serializer = EmployeeTreeSerializer(self.get_queryset(), many=True)
             page = self.paginate_queryset(serializer.data)
-            # return Response(serializer.data, content_type='application/json')
             return self.get_paginated_response(page)
         else:
             return super().get(self, request, *args, **kwargs)
@@ -145,7 +135,6 @@ class EmployeeListApiView(LoginRequiredMixin, ListAPIView):
             queryset = queryset.order_by(ordering)
         return queryset
 
-    
     def get_ordering(self):
         self.ordering = self.request.GET.get('order_by')
         return self.ordering

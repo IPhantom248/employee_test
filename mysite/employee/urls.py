@@ -1,6 +1,6 @@
 from django.urls import path
 from employee.views import get_all_employees, get_all_employees_test, EmployeesListView, SignUpView, LoginView, \
-    user_logout, EmployeeListApiView, EmployeeTreeApiView, EmployeesDeleteView, EmployeesEditView
+    user_logout, EmployeeListApiView, EmployeeTreeApiView, EmployeesDeleteView, EmployeesEditView, EmployeesCreateView
 from django.conf import settings
 from django.conf.urls.static import static
 
@@ -14,7 +14,8 @@ urlpatterns = [
     path('employees/api/search/', EmployeeListApiView.as_view(), name="employees-api"),
     path('api/tree/', EmployeeTreeApiView.as_view(), name='employees-api-tree'),
     path('employees/<int:pk>/delete', EmployeesDeleteView.as_view(), name='employees-delete'),
-    path('employees/<int:pk>/edit', EmployeesEditView.as_view(), name='employees-edit')
+    path('employees/<int:pk>/edit', EmployeesEditView.as_view(), name='employees-edit'),
+    path('employees/create', EmployeesCreateView.as_view(), name='employees-create')
 
 ]
 if settings.DEBUG:

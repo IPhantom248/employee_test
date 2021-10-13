@@ -22,6 +22,7 @@ class SignUpForm(UserCreationForm):
             'password2': forms.TextInput(attrs={'class': 'form-control'})
         }
 
+
 class EmployeesEditForm(forms.ModelForm):
     class Meta:
         model = EmployeeTree
@@ -30,6 +31,7 @@ class EmployeesEditForm(forms.ModelForm):
             'full_name': forms.TextInput(attrs={'class': 'form-control'}),
             'salary': forms.TextInput(attrs={'class': 'form-control'}),
             'parent': forms.Select(attrs={'class': 'form-control'}),
-            'hired_at': forms.DateInput(attrs={'class': 'form-control'}),
+            'hired_at': forms.DateInput(format=('%Y-%m-%d'), attrs={'class': 'form-control datetimepicker-input',
+                                                                    'data-target': '#datetimepicker1'}),
             # 'parent' : TreeNodeChoiceField(model.objects.all())
-        }        
+        }
