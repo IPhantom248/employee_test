@@ -11,14 +11,17 @@ class ParentSerializer(serializers.ModelSerializer):  # Этот класс ну
 
 
 class EmployeeTreeSerializer(serializers.ModelSerializer):
-    # parent = SerializerMethodField('get_parent_fullname')
+    parent = SerializerMethodField('get_parent_fullname')
     hired_at = serializers.DateField('%B %d, %Y')
     is_leaf = serializers.BooleanField(source="is_leaf_node")
 
     class Meta:
         model = EmployeeTree
-        fields = ('pk', 'full_name', 'hired_at', 'salary', 'level', 'is_leaf', 'image')
+        fields = ('pk', 'full_name', 'hired_at', 'salary', 'level', 'is_leaf', 'image', 'parent')
 
     def get_parent_fullname(self, obj):
-        parent_full_name = obj.parent.full_name
+        if obj.parent:
+            parent_full_name = obj.parent.full_name
+        else:
+            parent_full_name = None
         return parent_full_name

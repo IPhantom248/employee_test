@@ -1,8 +1,10 @@
-from django.urls import path
+import debug_toolbar
+from django.urls import path, include
 from employee.views import get_all_employees, get_all_employees_test, EmployeesListView, SignUpView, LoginView, \
     user_logout, EmployeeListApiView, EmployeeTreeApiView, EmployeesDeleteView, EmployeesEditView, EmployeesCreateView
 from django.conf import settings
 from django.conf.urls.static import static
+
 
 urlpatterns = [
     path('', get_all_employees, name="employees-home"),
@@ -15,7 +17,8 @@ urlpatterns = [
     path('api/tree/', EmployeeTreeApiView.as_view(), name='employees-api-tree'),
     path('employees/<int:pk>/delete', EmployeesDeleteView.as_view(), name='employees-delete'),
     path('employees/<int:pk>/edit', EmployeesEditView.as_view(), name='employees-edit'),
-    path('employees/create', EmployeesCreateView.as_view(), name='employees-create')
+    path('employees/create', EmployeesCreateView.as_view(), name='employees-create'),
+    path('__debug__/', include(debug_toolbar.urls)),
 
 ]
 if settings.DEBUG:

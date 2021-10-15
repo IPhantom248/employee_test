@@ -1,16 +1,11 @@
-import sys
-
 import dateutil.parser
 from django.contrib.auth import login, logout
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.core.paginator import Paginator
 from django.http import HttpResponseRedirect
 from django.shortcuts import render, redirect
 from django.urls import reverse, reverse_lazy
-from django.utils.functional import cached_property
 from rest_framework.generics import ListAPIView
 from rest_framework.pagination import PageNumberPagination
-from rest_framework.utils.urls import replace_query_param, remove_query_param
 
 from employee.forms import SignUpForm, LoginForm, EmployeesEditForm
 from employee.models import EmployeeTree
@@ -25,7 +20,7 @@ from employee.serializers import EmployeeTreeSerializer
 
 
 def get_all_employees(request):
-    object_list = EmployeeTree.objects.all()
+    object_list = EmployeeTree.objects.filter(level=0)
     return render(request, 'employee/home.html', {'object_list': object_list})
 
 
@@ -80,7 +75,7 @@ class EmployeeTreeApiView(ListAPIView):
     def get_queryset(self):
         if self.request.is_ajax():
             pk = self.request.GET.get('pk')
-            children_queryset = EmployeeTree.objects.filter(parent=pk)
+            children_queryset = EmployeeTree.objects.filter(parent=pk).select_related('parent')
             return children_queryset
         else:
             return super().get_queryset()
@@ -108,9 +103,9 @@ class EmployeeListApiView(LoginRequiredMixin, ListAPIView):
 
     def get(self, request, *args, **kwargs):
         if request.is_ajax():
-            serializer = EmployeeTreeSerializer(self.get_queryset(), many=True)
-            page = self.paginate_queryset(serializer.data)
-            return self.get_paginated_response(page)
+            page = self.paginate_queryset(self.get_queryset().select_related('parent'))
+            serializer = EmployeeTreeSerializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
         else:
             return super().get(self, request, *args, **kwargs)
 
@@ -146,6 +141,9 @@ class EmployeesListView(LoginRequiredMixin, ListView):
     template_name = "employee/employees.html"  # <app>/<model>_<viewtype>.html
     context_object_name = "employees"
     paginate_by = 10
+
+    def get_queryset(self):
+        return super(EmployeesListView, self).get_queryset().select_related('parent')
 
 
 class SignUpView(CreateView):

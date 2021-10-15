@@ -101,7 +101,7 @@
             for (let i = 0; i < response.results.length; i++) {
                 let parent = 'Boss'
                 if (response.results[i].parent) {
-                    parent = response.results[i].parent.full_name
+                    parent = response.results[i].parent
                 }
                 $tableBody.append('<tr>\n' +
                     '<th scope="row">' + response.results[i].pk + '</th>\n' +
