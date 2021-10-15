@@ -94,41 +94,41 @@
     }
 
     function printResult(response) {
-        //console.log(getParams(paramDict))
         let $tableBody = $("tbody")
         $tableBody.empty()
-        if (response.results.length > 0) {
-            for (let i = 0; i < response.results.length; i++) {
+        if (response.results.length) {
+            $(response.results).each(function () {
+                let employee = $(this)[0]
                 let parent = 'Boss'
-                if (response.results[i].parent) {
-                    parent = response.results[i].parent
+                if (employee.parent) {
+                    parent = employee.parent
                 }
                 $tableBody.append('<tr>\n' +
-                    '<th scope="row">' + response.results[i].pk + '</th>\n' +
-                    '<td>' + response.results[i].full_name + '</td>\n' +
+                    '<th scope="row">' + employee.pk + '</th>\n' +
+                    '<td>' + employee.full_name + '</td>\n' +
                     '<td>' + parent + '</td>\n' +
-                    '<td>' + response.results[i].salary + '</td>\n' +
-                    '<td>' + response.results[i].hired_at + '</td>\n' +
-                    '<td>' + response.results[i].level + '</td>\n' +
-                    '<td><img class="rounded-circle article-img" src="' + response.results[i].image + '"></td>\n' +
+                    '<td>' + employee.salary + '</td>\n' +
+                    '<td>' + employee.hired_at + '</td>\n' +
+                    '<td>' + employee.level + '</td>\n' +
+                    '<td><img class="rounded-circle article-img" src="' + employee.image + '"></td>\n' +
                     '<td>\n' +
-                    '<a href="/employees/' + response.results[i].pk + '/edit">edit</a><br>' +
-                    '<a href="/employees/' + response.results[i].pk + '/delete">delete</a>' +
+                    '<a href="/employees/' + employee.pk + '/edit">edit</a><br>' +
+                    '<a href="/employees/' + employee.pk + '/delete">delete</a>' +
                     '</td>' +
                     '</tr>'
                 )
-            }
+            })
             $pagination = $('.pagination')
             $pagination.empty()
             if (response.count > 1) {
                 $pagination.append('<li class="page-item ' + (response.links['previous'] ? '' : 'disabled') + '"><a class="page-link" href=' + (response.links['previous'] ? response.links['previous'] : '#') + '>Previous</a></li>')
 
                 for (let i = response.current_page - 2; i < response.current_page + 5 && i < response.count + 1; i++) {
-                    if (i > 0) {
+                    if (i) {
                         if ($pagination.children().length > 5) {
                             break
                         }
-                            $pagination.append('<li class="page-item' + (response.current_page === i ? ' active' : '') + '"><a class="page-link" href="#"> ' + (i) + ' </a></li>')
+                        $pagination.append('<li class="page-item' + (response.current_page === i ? ' active' : '') + '"><a class="page-link" href="#"> ' + (i) + ' </a></li>')
                     }
 
                 }
@@ -142,12 +142,10 @@
 
     $('body').on('click', '.page-item', function (event) {
         event.preventDefault()
-        console.log(event.target)
         if (event.target.text === 'Next')
-            if (paramDict['page']){
+            if (paramDict['page']) {
                 paramDict['page'] += 1
-            }
-            else {
+            } else {
                 paramDict['page'] = 2
             }
         else if (event.target.text === 'Previous' && paramDict['page'] > 1)
@@ -155,8 +153,6 @@
         else {
             paramDict['page'] = event.target.text
         }
-        //console.log(paramDict)
-        //console.log(getParams(paramDict))
         $.ajax({
             url: "{% url 'employees-api' %}",
             type: 'get',
@@ -178,8 +174,6 @@
         paramDict['s'] = searchData
         paramDict['page'] = null
         paramDict['order_by'] = null
-        //console.log(paramDict)
-        //console.log(getParams(paramDict))
         $.ajax({
             url: "{% url 'employees-api' %}",
             type: 'get',
@@ -193,16 +187,15 @@
     })
 
     $(":checkbox").click(function () {
-        //e.preventDefault();
         paramDict['page'] = null;
         paramDict['order_by'] = $(this).attr('id');
         let dataDict = getParams(paramDict);
-        if ($(this).prop('checked') == true) {
+        if ($(this).prop('checked')) {
             $(this).next().attr('src', "{% static 'employee/filter_down.svg' %}");
             dataDict['order_by'] = '-' + dataDict['order_by'];
-        } else{ $(this).next().attr('src', "{% static 'employee/filter_up.svg' %}") }
-        console.log(paramDict)
-        console.log(dataDict)
+        } else {
+            $(this).next().attr('src', "{% static 'employee/filter_up.svg' %}")
+        }
         $.ajax({
             url: "{% url 'employees-api' %}",
             type: 'get',
