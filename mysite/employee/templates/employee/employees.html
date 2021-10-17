@@ -53,7 +53,7 @@
     {% for employee in employees %}
     <tr>
         <th scope="row">{{employee.id}}</th>
-        <td>{{ employee.full_name }}</td>
+        <td><a href="{% url 'employees-detail' employee.id %}">{{ employee.full_name }}</a></td>
         {% if employee.parent %}
         <td>{{ employee.parent.full_name }}</td>
         {% else %}
@@ -105,7 +105,7 @@
                 }
                 $tableBody.append('<tr>\n' +
                     '<th scope="row">' + employee.pk + '</th>\n' +
-                    '<td>' + employee.full_name + '</td>\n' +
+                    '<td><a href="/employees/' + employee.pk + '">'+ employee.full_name +'</a></td>' +
                     '<td>' + parent + '</td>\n' +
                     '<td>' + employee.salary + '</td>\n' +
                     '<td>' + employee.hired_at + '</td>\n' +

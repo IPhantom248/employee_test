@@ -9,7 +9,7 @@ from rest_framework.pagination import PageNumberPagination
 
 from employee.forms import SignUpForm, LoginForm, EmployeesEditForm
 from employee.models import EmployeeTree
-from django.views.generic import ListView, CreateView, FormView, DeleteView, UpdateView
+from django.views.generic import ListView, CreateView, FormView, DeleteView, UpdateView, DetailView
 from django.contrib.auth.models import User
 from django.db.models import Q
 from rest_framework.response import Response
@@ -34,6 +34,15 @@ class EmployeesCreateView(CreateView):
     template_name = 'employee/create.html'
     form_class = EmployeesEditForm
     success_url = reverse_lazy('employees-detail')
+
+
+class EmployeesDetailView(DetailView):
+    model = EmployeeTree
+    template_name = 'employee/detail.html'
+    context_object_name = 'employee'
+
+    def get_queryset(self):
+        return super().get_queryset().select_related('parent')
 
 
 class EmployeesEditView(UpdateView):

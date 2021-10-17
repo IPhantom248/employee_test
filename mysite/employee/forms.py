@@ -31,5 +31,4 @@ class EmployeesEditForm(forms.ModelForm):
             'parent': forms.Select(attrs={'class': 'form-control'}),
             'hired_at': forms.DateInput(format=('%Y-%m-%d'), attrs={'class': 'form-control datetimepicker-input',
                                                                     'data-target': '#datetimepicker1'}),
-            # 'parent' : TreeNodeChoiceField(model.objects.all())
         }
