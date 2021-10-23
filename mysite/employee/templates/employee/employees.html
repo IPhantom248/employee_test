@@ -193,6 +193,7 @@
         if ($(this).prop('checked')) {
             $(this).next().attr('src', "{% static 'employee/filter_down.svg' %}");
             dataDict['order_by'] = '-' + dataDict['order_by'];
+            paramDict['order_by'] = dataDict['order_by']
         } else {
             $(this).next().attr('src', "{% static 'employee/filter_up.svg' %}")
         }
