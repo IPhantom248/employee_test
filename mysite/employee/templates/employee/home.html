@@ -17,41 +17,73 @@
         </ol>
     </div>
 
+<script>
+    let PreventOnloadSave=0;
+    function updateOutput(e){
+        var list   = e.length ? e : $(e.target);
+        var previousVal = list.data('output');
+        var newVal = window.JSON.stringify(list.nestable('serialize'));
+        $('#nestable').data('output', newVal);
 
-    <script>
-        $(document).ready(function () {
-            // activate Nestable for list 1
-            $('#nestable').nestable({});
-            $('#nestable').nestable('collapseAll');
-            // https://moxiemaks.ru/jquery/sobytija-dlja-dinamicheski-dobavlennyh-jelementov-v-jquery/
-
-            $("body").on("click", 'button[data-action="expand"]', function () {
-                let $parent = $(this).parent()
-                let dataId = $parent.attr('data-id')
+        if(PreventOnloadSave){
+            if(previousVal != newVal){
+                parentID = $(`li[data-id=${draggedID}]`).parents('[data-id]').attr('data-id')
                 $.ajax({
-                    url: "{% url 'employees-api-tree' %}",
+                    url: "{% url 'update_parent' %}",
                     type: 'get',
-                    data: {pk: dataId},
+                    data: {emp_id: draggedID,
+                    parent_id: parentID},
                     success: function (response) {
-                        $parent.find('.dd-list').remove()
-                        $parent.append('<ol class="dd-list">\n' +
-                            '                            </ol>')
-                        $ddList = $parent.find('.dd-list')
-                        for (let i = 0; i < response.length; i++) {
-                            $ddList.append('<li class="dd-item" data-id="' + response[i].pk + '"><ol class="dd-list" style="display: none;">\n' +
-                                '\n' +
-                                '                </ol><div class="dd-handle">' + response[i].full_name + ' | level: ' + response[i].level + '</div></li>\n')
-
-                            if (response[i].is_leaf == false) {
-                                $ddList.find('.dd-item').last().prepend('<button data-action="expand" type="button" style="display: block;">Expand</button>')
-                                $ddList.find('.dd-item').last().prepend('<button data-action="collapse" type="button" style="display: none;">Collapse</button>')
-                            }
-                        }
+                        console.log('suc')
                     }
-                })
+                });
+            };
+        }else{
+            PreventOnloadSave++;
+        };           
+    };
 
+    $(document).ready(function () {
+        // activate Nestable for list 1
+        $('#nestable').nestable({}).on('change', updateOutput);
+        $('#nestable').nestable('collapseAll');
+        updateOutput($('#nestable').data('output', window.JSON.stringify($('#nestable').nestable('serialize'))));
+        // https://moxiemaks.ru/jquery/sobytija-dlja-dinamicheski-dobavlennyh-jelementov-v-jquery/
+        $(".dd").on("mousedown",function(){
+            setTimeout(function(){
+                if( $("body").find(".dd-dragel") ){
+                    draggedID = $("body").find(".dd-dragel").find(".dd-item").attr("data-id");
+                    //old_parentID = $(`li[data-id=${draggedID}]`).parents('[data-id]').attr('data-id')
+                }
             })
         });
-    </script>
+    });
+
+    $("body").on("click", 'button[data-action="expand"]', function () {
+        let $parent = $(this).parent()
+        let dataId = $parent.attr('data-id')
+        $.ajax({
+            url: "{% url 'employees-api-tree' %}",
+            type: 'get',
+            data: {pk: dataId},
+            success: function (response) {
+                $parent.find('.dd-list').remove()
+                $parent.append('<ol class="dd-list">\n' +
+                    '                            </ol>')
+                $ddList = $parent.find('.dd-list')
+                for (let i = 0; i < response.length; i++) {
+                    $ddList.append('<li class="dd-item" data-id="' + response[i].pk + '"><ol class="dd-list" style="display: none;">\n' +
+                        '\n' +
+                        '                </ol><div class="dd-handle">' + response[i].full_name + ' | level: ' + response[i].level + '</div></li>\n')
+
+                    if (response[i].is_leaf == false) {
+                        $ddList.find('.dd-item').last().prepend('<button data-action="expand" type="button" style="display: block;">Expand</button>')
+                        $ddList.find('.dd-item').last().prepend('<button data-action="collapse" type="button" style="display: none;">Collapse</button>')
+                    }
+                }
+            }
+        })
+    });  
+</script>
 </main>
 {% endblock %}

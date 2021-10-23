@@ -2,7 +2,7 @@ import debug_toolbar
 from django.urls import path, include
 from employee.views import get_all_employees, get_all_employees_test, EmployeesListView, SignUpView, LoginView, \
     user_logout, EmployeeListApiView, EmployeeTreeApiView, EmployeesDeleteView, EmployeesEditView, EmployeesCreateView, \
-    EmployeesDetailView
+    EmployeesDetailView, update_parent
 from django.conf import settings
 from django.conf.urls.static import static
 
@@ -21,6 +21,7 @@ urlpatterns = [
     path('employees/<int:pk>', EmployeesDetailView.as_view(), name='employees-detail'),
     path('employees/create', EmployeesCreateView.as_view(), name='employees-create'),
     path('__debug__/', include(debug_toolbar.urls)),
+    path('update/', update_parent, name="update_parent"),
 
 ]
 if settings.DEBUG:
