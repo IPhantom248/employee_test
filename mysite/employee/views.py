@@ -178,6 +178,7 @@ def user_logout(request):
     logout(request)
     return redirect('employees-home')
 
+
 def update_parent(request):
     emp_id = request.GET.get('emp_id')
     parent_id = request.GET.get('parent_id')
@@ -186,6 +187,5 @@ def update_parent(request):
     if parent_id:
         employee.parent = EmployeeTree.objects.get(id=parent_id)
     employee.save()
-    # print(employee.parent.full_name)
     response_data = {'success':1}
     return HttpResponse(json.dumps(response_data), content_type="application/json")
